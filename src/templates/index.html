@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block title %}Cluster Visualization - Research Paper Explorer{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-chart-scatter"></i> Research Paper Clusters
+            <small class="text-muted">({{ total_papers }} papers)</small>
+        </h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-project-diagram"></i> Paper Distribution by Keywords</h5>
+                <small class="text-muted">Each dot represents a paper, colored by cluster. Click on points to see details.</small>
+            </div>
+            <div class="card-body">
+                <div id="cluster-plot" style="height: 600px;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-tags"></i> Cluster Keywords</h5>
+            </div>
+            <div class="card-body" id="cluster-info">
+                <p class="text-muted">Click on a cluster in the plot to see its keywords and papers.</p>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Paper Details</h5>
+            </div>
+            <div class="card-body" id="paper-details">
+                <p class="text-muted">Click on a paper point to see its details.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-list"></i> Cluster Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="row" id="cluster-summary">
+                    <!-- Cluster cards will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const clusterData = {{ cluster_data | safe }};
+    
+    // Create the scatter plot
+    function createClusterPlot() {
+        const traces = [];
+        const colors = [
+            '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
+            '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'
+        ];
+        
+        // Create a trace for each cluster
+        clusterData.forEach((cluster, idx) => {
+            const paperX = cluster.papers.map(p => p.x);
+            const paperY = cluster.papers.map(p => p.y);
+            const paperText = cluster.papers.map(p => 
+                `<b>${p.title.substring(0, 50)}...</b><br>` +
+                `DOI: ${p.doi}<br>` +
+                `Distance from center: ${p.distance.toFixed(3)}`
+            );
+            
+            traces.push({
+                x: paperX,
+                y: paperY,
+                mode: 'markers',
+                type: 'scatter',
+                name: `Cluster ${cluster.cluster_id}`,
+                text: paperText,
+                hovertemplate: '%{text}<extra></extra>',
+                marker: {
+                    size: 8,
+                    color: colors[idx % colors.length],
+                    opacity: 0.7
+                },
+                customdata: cluster.papers.map(p => ({...p, cluster_id: cluster.cluster_id}))
+            });
+            
+            // Add cluster center
+            traces.push({
+                x: [cluster.center_x],
+                y: [cluster.center_y],
+                mode: 'markers',
+                type: 'scatter',
+                name: `Center ${cluster.cluster_id}`,
+                showlegend: false,
+                text: [`Cluster ${cluster.cluster_id} Center<br>Keywords: ${cluster.keywords.slice(0, 3).join(', ')}`],
+                hovertemplate: '%{text}<extra></extra>',
+                marker: {
+                    size: 15,
+                    color: colors[idx % colors.length],
+                    symbol: 'diamond',
+                    line: {
+                        color: 'white',
+                        width: 2
+                    }
+                }
+            });
+        });
+        
+        const layout = {
+            title: 'Research Paper Clusters (PCA 2D Projection)',
+            xaxis: { title: 'PC1' },
+            yaxis: { title: 'PC2' },
+            hovermode: 'closest',
+            height: 600,
+            margin: { t: 50, l: 50, r: 50, b: 50 }
+        };
+        
+        Plotly.newPlot('cluster-plot', traces, layout);
+        
+        // Add click handler
+        document.getElementById('cluster-plot').on('plotly_click', function(data) {
+            const point = data.points[0];
+            if (point.customdata) {
+                showPaperDetails(point.customdata);
+                showClusterInfo(point.customdata.cluster_id);
+            }
+        });
+    }
+    
+    function showClusterInfo(clusterId) {
+        const cluster = clusterData.find(c => c.cluster_id === clusterId);
+        if (!cluster) return;
+        
+        const html = `
+            <h6>Cluster ${clusterId}</h6>
+            <p><strong>Papers:</strong> ${cluster.papers.length}</p>
+            <p><strong>Keywords:</strong></p>
+            <div class="mb-2">
+                ${cluster.keywords.map(kw => `<span class="badge bg-primary me-1">${kw}</span>`).join('')}
+            </div>
+            <p><strong>Center:</strong> (${cluster.center_x.toFixed(3)}, ${cluster.center_y.toFixed(3)})</p>
+        `;
+        
+        document.getElementById('cluster-info').innerHTML = html;
+    }
+    
+    function showPaperDetails(paper) {
+        const html = `
+            <h6>${paper.title.substring(0, 100)}${paper.title.length > 100 ? '...' : ''}</h6>
+            <p><strong>DOI:</strong> <small>${paper.doi}</small></p>
+            <p><strong>Distance from cluster center:</strong> ${paper.distance.toFixed(3)}</p>
+            <p><strong>Position:</strong> (${paper.x.toFixed(3)}, ${paper.y.toFixed(3)})</p>
+            <button class="btn btn-sm btn-primary" onclick="loadFullPaperDetails('${paper.doi}')">
+                <i class="fas fa-info-circle"></i> Full Details
+            </button>
+        `;
+        
+        document.getElementById('paper-details').innerHTML = html;
+    }
+    
+    function createClusterSummary() {
+        const summaryHtml = clusterData.map(cluster => `
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card h-100 cluster-card" onclick="highlightCluster(${cluster.cluster_id})" style="cursor: pointer;">
+                    <div class="card-body">
+                        <h6 class="card-title">Cluster ${cluster.cluster_id}</h6>
+                        <p class="card-text">
+                            <strong>${cluster.papers.length}</strong> papers<br>
+                            <small class="text-muted">
+                                ${cluster.keywords.slice(0, 3).join(', ')}
+                                ${cluster.keywords.length > 3 ? '...' : ''}
+                            </small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        document.getElementById('cluster-summary').innerHTML = summaryHtml;
+    }
+    
+    function highlightCluster(clusterId) {
+        showClusterInfo(clusterId);
+        // Could add plot highlighting here
+    }
+    
+    async function loadFullPaperDetails(doi) {
+        try {
+            const response = await fetch(`/api/paper/${encodeURIComponent(doi)}`);
+            const paper = await response.json();
+            
+            if (paper.error) {
+                alert('Paper not found');
+                return;
+            }
+            
+            const modal = new bootstrap.Modal(document.getElementById('paperModal') || createPaperModal());
+            document.getElementById('paperModalContent').innerHTML = `
+                <h5>${paper.title}</h5>
+                <p><strong>Authors:</strong> ${paper.authors}</p>
+                <p><strong>Date:</strong> ${paper.date}</p>
+                <p><strong>DOI:</strong> <small>${paper.doi}</small></p>
+                <p><strong>Keywords:</strong> ${paper.keywords || 'N/A'}</p>
+                <p><strong>Abstract:</strong></p>
+                <p class="text-muted">${paper.abstract}</p>
+                <p><strong>Cluster:</strong> ${paper.cluster}</p>
+            `;
+            modal.show();
+        } catch (error) {
+            console.error('Error loading paper details:', error);
+        }
+    }
+    
+    function createPaperModal() {
+        const modalHtml = `
+            <div class="modal fade" id="paperModal" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Paper Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body" id="paperModalContent">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        return document.getElementById('paperModal');
+    }
+    
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+        createClusterPlot();
+        createClusterSummary();
+    });
+</script>
+{% endblock %}

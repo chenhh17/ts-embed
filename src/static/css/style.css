@@ -1,0 +1,201 @@
+/* Custom styles for Research Paper Explorer */
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar-brand {
+    font-weight: 600;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #e9ecef;
+    font-weight: 500;
+}
+
+.cluster-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.cluster-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.paper-result {
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+.paper-result:hover {
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.similarity-score {
+    text-align: center;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+/* Loading spinner */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Search input styling */
+.input-group-lg .form-control {
+    border-radius: 0.5rem 0 0 0.5rem;
+}
+
+.input-group-lg .form-select {
+    border-radius: 0;
+}
+
+.input-group-lg .btn {
+    border-radius: 0 0.5rem 0.5rem 0;
+}
+
+/* Plot container */
+#cluster-plot {
+    border-radius: 0.5rem;
+}
+
+/* Modal styling */
+.modal-xl {
+    max-width: 90%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    .similarity-score {
+        text-align: left;
+        margin-top: 1rem;
+    }
+    
+    #cluster-plot {
+        height: 400px !important;
+    }
+}
+
+/* Custom scrollbar for webkit browsers */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Animation for loading states */
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.loading {
+    animation: pulse 2s infinite;
+}
+
+/* Keyword badges */
+.badge.bg-light {
+    color: #495057 !important;
+    border: 1px solid #dee2e6;
+}
+
+/* Paper title styling */
+.card-title {
+    color: #2c3e50;
+    line-height: 1.3;
+}
+
+/* Abstract text */
+.card-text {
+    color: #6c757d;
+    line-height: 1.5;
+}
+
+/* DOI styling */
+.font-monospace {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    background-color: #f8f9fa;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+/* Button hover effects */
+.btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Alert styling */
+.alert {
+    border: none;
+    border-radius: 0.5rem;
+}
+
+/* Navigation active state */
+.nav-link.active {
+    font-weight: 600;
+}
+
+/* Cluster info panel */
+#cluster-info, #paper-details {
+    min-height: 200px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Search results styling */
+.paper-result .badge {
+    font-weight: 500;
+}
+
+/* Example query buttons */
+.btn-outline-secondary.btn-sm {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Plotly plot responsiveness */
+.plotly-graph-div {
+    width: 100% !important;
+    height: 100% !important;
+}
