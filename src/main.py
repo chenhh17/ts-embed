@@ -64,7 +64,7 @@ def load_data():
     
     # Load embeddings
     logger.info("Loading embeddings...")
-    embeddings_df = pd.read_csv('/home/tadreamk-admin/alex/ts-embed/pdf_project/db/embedded.csv', index_col=0)
+    embeddings_df = pd.read_csv('pdf_project/db/embedded.csv', index_col=0)
     
     # Handle NaN values in embeddings
     logger.info("Cleaning embeddings data...")
@@ -72,7 +72,7 @@ def load_data():
     
     # Load metadata
     logger.info("Loading metadata...")
-    meta_df = pd.read_csv('/home/tadreamk-admin/alex/ts-embed/pdf_project/db/AMJ_2015_2025_meta.csv', skiprows=1)
+    meta_df = pd.read_csv('pdf_project/db/AMJ_2015_2025_meta.csv', skiprows=1)
     
     # Merge data on DOI
     logger.info("Merging data...")
