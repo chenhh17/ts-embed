@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ message }} - FastAPI Hello World</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-gradient">
+        <div class="text-center">
+            <div class="hello-container">
+                <h1 class="display-1 fw-bold text-primary mb-3 animate-bounce">
+                    <i class="fas fa-globe-americas me-3"></i>
+                    {{ message }}
+                </h1>
+
+                <p class="lead text-muted mb-4 animate-fade-in">
+                    {{ subtitle }}
+                </p>
+
+                <div class="card shadow-lg border-0 rounded-4 animate-slide-up">
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="feature-card">
+                                    <i class="fas fa-rocket feature-icon text-success"></i>
+                                    <h5 class="mt-2">FastAPI</h5>
+                                    <p class="text-muted small">Modern Python web framework</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="feature-card">
+                                    <i class="fas fa-code feature-icon text-info"></i>
+                                    <h5 class="mt-2">Jinja2</h5>
+                                    <p class="text-muted small">Template engine</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="feature-card">
+                                    <i class="fas fa-palette feature-icon text-warning"></i>
+                                    <h5 class="mt-2">Bootstrap</h5>
+                                    <p class="text-muted small">Responsive design</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-center gap-3">
+                            <button class="btn btn-primary btn-lg px-4" onclick="showAlert()">
+                                <i class="fas fa-hand-sparkles me-2"></i>
+                                Click Me!
+                            </button>
+                            <a href="/api/hello" class="btn btn-outline-primary btn-lg px-4" target="_blank">
+                                <i class="fas fa-api me-2"></i>
+                                API Endpoint
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-muted">
+                    <small>
+                        <i class="fas fa-server me-1"></i>
+                        Running on FastAPI • Port 8080
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JS -->
+    <script>
+        function showAlert() {
+            alert('🎉 Hello from FastAPI and Jinja2!');
+        }
+
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click effect to feature cards
+            document.querySelectorAll('.feature-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+
+            // Add hover effect to the main title
+            const title = document.querySelector('.display-1');
+            title.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05)';
+                this.style.transition = 'transform 0.3s ease';
+            });
+
+            title.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
